@@ -4,25 +4,62 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    private Rigidbody2D _playerRigidBody2D;
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private float moveSpeed = 2f;
+
+    [SerializeField]
+    private float jumpForce = 3f;
+
+    private Rigidbody2D playerRigidBody2D;
+
+    private SpriteRenderer playerSprite;
+
+
+    private void Start()
     {
-        _playerRigidBody2D = GetComponent<Rigidbody2D>();
+        playerRigidBody2D = GetComponent<Rigidbody2D>();
+
+        playerSprite = GetComponentInChildren<SpriteRenderer>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         CharacterControl();
     }
 
     private void CharacterControl()
     {
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float VerticalInput = Input.GetAxisRaw("Vertical");
+        float input = Input.GetAxisRaw("Horizontal");
+        Flip(input);
+        if (playerRigidBody2D != null)
+        {
+            playerRigidBody2D.velocity = new Vector2(input * moveSpeed, playerRigidBody2D.velocity.y);
+        }
 
-        _playerRigidBody2D.velocity = new Vector2(horizontalInput * 3, VerticalInput *3);
+        Jump();
+    }
 
+    private void Flip(float input)
+    {
+        if(playerSprite != null)
+        {
+            if (input > 0)
+            {
+                playerSprite.flipX = false;
+            }
+            else if (input < 0)
+            {
+                playerSprite.flipX = true;
+            }
+        }
+        
+    }
+
+    private void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            playerRigidBody2D.velocity = new Vector2(playerRigidBody2D.velocity.x, jumpForce);
+        }
     }
 }
